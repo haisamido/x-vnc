@@ -4,11 +4,14 @@ ARG IMAGE_NAME=ubuntu
 ARG IMAGE_TAG=25.04
 ARG IMAGE_URI=${REGISTRY_HOST}/${IMAGE_USERNAME}/${IMAGE_NAME}:${IMAGE_TAG}
 
+ARG VNC_PASSWORD=0123456789
+
 ################################################################################
 FROM ${IMAGE_URI}
 ################################################################################
-# TODO: runs as root inside of docker, can be changed
-ENV PASSWORD=0123456789
+
+ARG VNC_PASSWORD
+ENV VNC_PASSWORD=${VNC_PASSWORD}
 
 RUN apt-get update && \
     apt-get install -y \
@@ -45,7 +48,7 @@ RUN apt-get update && \
 
 # VNC Config
 RUN mkdir -p ~/.vnc/
-RUN echo $PASSWORD | vncpasswd -f > ~/.vnc/passwd
+RUN echo ${VNC_PASSWORD} | vncpasswd -f > ~/.vnc/passwd
 RUN chmod 0600 ~/.vnc/passwd
 RUN openssl req -x509 -nodes -newkey rsa:2048 -keyout ~/novnc.pem -out ~/novnc.pem -days 3650 -subj "/C=US/ST=NY/L=NY/O=NY/OU=NY/CN=NY emailAddress=email@example.com"
 
@@ -56,7 +59,7 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-    # TODO: need to figure out why this is needed
+# TODO: need to figure out why this is needed
 RUN ln -sf /usr/share/xsessions/fluxbox.desktop /usr/share/xsessions/gnome.desktop
 
 # Install tools for git cloning and building
