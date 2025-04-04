@@ -3,11 +3,11 @@ ARG IMAGE_USERNAME=library
 ARG IMAGE_NAME=ubuntu
 ARG IMAGE_TAG=25.04
 ARG IMAGE_URI=${REGISTRY_HOST}/${IMAGE_USERNAME}/${IMAGE_NAME}:${IMAGE_TAG}
+
 ################################################################################
 FROM ${IMAGE_URI}
 ################################################################################
-# TODO: runs as root inside of docker (NOT SECURE. USE AT YOUR OWN RISK)
-ENV USER=root
+# TODO: runs as root inside of docker, can be changed
 ENV PASSWORD=0123456789
 
 RUN apt-get update && \
@@ -51,7 +51,8 @@ RUN openssl req -x509 -nodes -newkey rsa:2048 -keyout ~/novnc.pem -out ~/novnc.p
 
 # Install and configure Display Manager(s)
 RUN apt-get update && \
-    apt-get install -y fluxbox && \
+    apt-get install -y \
+      fluxbox && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
@@ -63,7 +64,7 @@ RUN apt-get update && \
     apt install -y git make gcc freeglut3-dev vim jq tree htop && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
-  
+
 COPY entrypoint.sh /entrypoint.sh
 
 COPY startapp.sh /startapp.sh

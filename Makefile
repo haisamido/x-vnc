@@ -23,24 +23,25 @@ IMAGE_NAME_TAG=${IMAGE_NAME}:${IMAGE_TAG}
 CONTAINER_NAME=${GIT_REPO}
 
 # vnc configurations
-VNC_PORT=5801
+EXTERNAL_VNC_PORT=15801
+INTERNAL_PORT=80
 
 build: ## Build 42 docker image
-	@${CONTAINER_BIN} build \
+	${CONTAINER_BIN} build \
 		--file ${DOCKERFILE} \
 		-t ${IMAGE_NAME_TAG} .
 
-up: | down build ## bring up 42 via docker, in x/vnc system
+up: | down build ## bring up X app in x/vnc system
 	@${CONTAINER_BIN} run -d --rm \
 		--name ${CONTAINER_NAME} \
     --volume ${PWD}/entrypoint.sh:/entrypoint.sh \
-	  --volume ${PWD}/startapp.sh:/startapp.sh \
-    -p ${VNC_PORT}:80 \
-		${IMAGE_NAME_TAG}
+    --volume ${PWD}/startapp.sh:/startapp.sh \
+    -p ${EXTERNAL_VNC_PORT}:${INTERNAL_PORT} ${IMAGE_NAME_TAG}; \
+    echo; $(MAKE) info; echo
 
 down: ## Bring down 42
-	@${CONTAINER_BIN} stop ${CONTAINER_NAME} || true
-	@${CONTAINER_BIN} rm ${CONTAINER_NAME} || true
+	${CONTAINER_BIN} stop ${CONTAINER_NAME} || true
+	${CONTAINER_BIN} rm ${CONTAINER_NAME} || true
 
 clean: ## clean up: stop, and remove container and delete 42's image
   ${CONTAINER_BIN} stop ${CONTAINER_NAME} || true && \
@@ -51,7 +52,7 @@ delete: ## delete 42's image
   ${CONTAINER_BIN} rmi ${IMAGE_NAME_TAG}
 
 info: ## show info
-	@echo "open browser to http://localhost:${VNC_PORT}/vnc.html and click on 'Connect'"
+	@echo "open browser to http://localhost:${EXTERNAL_VNC_PORT}/vnc.html and click on 'Connect'";
 
 #---
 RESET  = \033[0m

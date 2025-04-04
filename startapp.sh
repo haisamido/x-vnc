@@ -1,5 +1,6 @@
 #!/bin/bash
 
-DISPLAY=:1 xeyes
+export DISPLAY=:1 
+xeyes
 
 tail -f /dev/null
