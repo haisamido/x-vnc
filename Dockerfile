@@ -57,7 +57,7 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
     # TODO: need to figure out why this is needed
-RUN ln -s /usr/share/xsessions/fluxbox.desktop /usr/share/xsessions/gnome.desktop
+RUN ln -sf /usr/share/xsessions/fluxbox.desktop /usr/share/xsessions/gnome.desktop
 
 # Install tools for git cloning and building
 RUN apt-get update && \
