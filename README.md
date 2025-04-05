@@ -1,4 +1,6 @@
-# How to use an X application in Docker/Podman within a vnc (turbovnc) web session
+# Run an X application in Docker/Podman within a vnc (turbovnc) web session
+
+Refer to https://github.com/haisamido/x-vnc/pkgs/container/x-vnc if you just want to use a pre-built image
 
 ## In `docker`
 
@@ -31,12 +33,3 @@ then in a browser connect to http://localhost:5801/vnc.html and click on 'Connec
 ### To bring down `podman`'s an X application do the following:
 
 `make down CONTAINER_BIN=podman`
-
-### Assumptions about `podman`:
-
-Install `podman` via these instructions https://podman.io/docs/installation and then do the following:
-
-```bash
-podman machine init
-podman machine start
-```
