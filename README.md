@@ -5,21 +5,24 @@ Refer to https://github.com/haisamido/x-vnc/pkgs/container/x-vnc if you just wan
 ## Run the following commands 
 
 ```bash
-CONTAINER_BIN=podman # or docker
-CONTAINER_NAME=42-x-vnc
+CONTAINER_BIN=podman                   # or docker
+CONTAINER_NAME=42-x-vnc                # whatever you with it to be
 IMAGE_URI=ghcr.io/haisamido/x-vnc:main # <--- pre-built image
 
-EXTERNAL_VNC_PORT=5801
+EXTERNAL_VNC_PORT=5801                 # proxy port
 
+# to stop previously running containers of above name, if any
 ${CONTAINER_BIN} stop ${CONTAINER_NAME} || true
 ${CONTAINER_BIN} rm ${CONTAINER_NAME} || true
 
+# run the image as a container
 ${CONTAINER_BIN} run -d --rm \
-		--name ${CONTAINER_NAME} \
-		--volume ${PWD}/entrypoint.sh:/entrypoint.sh \
-		--volume ${PWD}/startapp.sh:/startapp.sh \
-		-p ${EXTERNAL_VNC_PORT}:80 \
-		${IMAGE_URI}
+  --name ${CONTAINER_NAME} \
+  --volume ${PWD}/entrypoint.sh:/entrypoint.sh \
+  --volume ${PWD}/startapp.sh:/startapp.sh \
+  -p ${EXTERNAL_VNC_PORT}:80 \
+  ${IMAGE_URI}
+
 ```
 
 Then open http://localhost:5801/vnc.html
