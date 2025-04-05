@@ -1,6 +1,8 @@
 #!/bin/bash
 
-export DISPLAY=:1 
-xeyes
+export DISPLAY=:1
+
+xterm &
+xeyes &
 
 tail -f /dev/null

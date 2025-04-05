@@ -1,12 +1,12 @@
-# X application in Docker/Podman within a Turbovnc web session
+# X app in `podman` or `docker` within a Turbovnc web session
 
 Refer to https://github.com/haisamido/x-vnc/pkgs/container/x-vnc if you just want to use a pre-built image
 
-## Run the following commands 
+## Run `xterm` and `xeyes` in a container
 
 ```bash
 CONTAINER_BIN=podman                   # or docker
-CONTAINER_NAME=42-x-vnc                # whatever you with it to be
+CONTAINER_NAME=xterm-x-vnc             # whatever you wish it to be
 IMAGE_URI=ghcr.io/haisamido/x-vnc:main # <--- pre-built image
 
 EXTERNAL_VNC_PORT=5801                 # proxy port
@@ -14,6 +14,8 @@ EXTERNAL_VNC_PORT=5801                 # proxy port
 # to stop previously running containers of above name, if any
 ${CONTAINER_BIN} stop ${CONTAINER_NAME} || true
 ${CONTAINER_BIN} rm ${CONTAINER_NAME} || true
+
+# Ignore: `Error: no container with name or ID "xterm-x-vnc" found: no such container`
 
 # run the image as a container
 ${CONTAINER_BIN} run -d --rm \
@@ -23,40 +25,42 @@ ${CONTAINER_BIN} run -d --rm \
   -p ${EXTERNAL_VNC_PORT}:80 \
   ${IMAGE_URI}
 
+# You can update `startapp.sh` to run different applications
+
 ```
 
-Then open http://localhost:5801/vnc.html
+Then open http://localhost:5801/vnc.html and you should see `xterm` & `xeyes` running
 
-## Or use the provided make file
+## Use the provided make file
 
 ### In `docker`
 
-#### To build an X application inside of a `docker` image do the following:
+#### Build an X application inside of a `docker` image:
 
 `make build`
 
-#### To bring up an X application inside of `docker` container do the following:
+#### Bring up an X application inside of `docker` container:
 
 `make up`
 
 then in a browser connect to http://localhost:5801/vnc.html and click on 'Connect'
 
-#### To bring down `docker`'s an X application do the following:
+#### Bring down `docker`'s an X application:
 
 `make down`
 
 ### In `podman`
 
-#### To build an X application inside of a `podman` image do the following:
+#### Build an X application inside of a `podman` image:
 
 `make build CONTAINER_BIN=podman`
 
-#### To bring up an X application inside of a `podman` container do the following:
+#### Bring up an X application inside of a `podman` container:
 
 `make up CONTAINER_BIN=podman`
 
 then in a browser connect to http://localhost:5801/vnc.html and click on 'Connect'
 
-#### To bring down `podman`'s an X application do the following:
+#### Bring down `podman`'s an X application:
 
 `make down CONTAINER_BIN=podman`
