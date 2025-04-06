@@ -62,11 +62,14 @@ RUN apt-get update && \
 # TODO: need to figure out why this is needed
 RUN ln -sf /usr/share/xsessions/fluxbox.desktop /usr/share/xsessions/gnome.desktop
 
-# Install tools for git cloning and building
+# Install tools for git cloning and development, etc.
 RUN apt-get update && \
-    apt install -y git make gcc freeglut3-dev vim jq tree htop && \
+    apt install -y curl git build-essential vim jq xq tree tmux htop && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
+
+# Install https://taskfile.dev/ (Taskfile.yaml)
+RUN sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d v3.36.0
 
 COPY entrypoint.sh /entrypoint.sh
 
