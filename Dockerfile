@@ -52,7 +52,7 @@ RUN echo ${VNC_PASSWORD} | vncpasswd -f > ~/.vnc/passwd
 RUN chmod 0600 ~/.vnc/passwd
 RUN openssl req -x509 -nodes -newkey rsa:2048 -keyout ~/novnc.pem -out ~/novnc.pem -days 3650 -subj "/C=US/ST=NY/L=NY/O=NY/OU=NY/CN=NY emailAddress=email@example.com"
 
-# Install and configure Display Manager(s)
+# Install and configure Display Manager(s) - https://fluxbox.org/
 RUN apt-get update && \
     apt-get install -y \
       fluxbox && \
