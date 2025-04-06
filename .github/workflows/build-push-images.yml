@@ -1,4 +1,4 @@
-name: amd64 Image CI
+name: build/push amd64 & arm64 images CI
 
 on:
   push:
@@ -36,11 +36,11 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ github.repository }}
 
-      - name: Build & Push amd64 Image
+      - name: build/push amd64 & arm64 images
         uses: docker/build-push-action@v5
         with:
           context: .
           push: true
-          platforms: linux/amd64
+          platforms: linux/amd64,linux/arm64
           tags: ${{ env.REGISTRY }}/${{ github.actor }}/${{ env.IMAGE_NAME }}:${{ github.ref_name }}, ${{ env.REGISTRY }}/${{ github.actor }}/${{ env.IMAGE_NAME }}:latest
           labels: ${{ steps.meta.outputs.labels }}
