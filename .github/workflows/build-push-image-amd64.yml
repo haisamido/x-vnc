@@ -1,4 +1,4 @@
-name: Docker Image CI
+name: amd64 Image CI
 
 on:
   push:
@@ -36,7 +36,7 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ github.repository }}
 
-      - name: Build & Push Docker Image(s)
+      - name: Build & Push amd64 Image
         uses: docker/build-push-action@v5
         with:
           context: .
