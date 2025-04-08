@@ -6,7 +6,7 @@ SHELL=bash
 export DIFF_PROGRAM:=vimdiff
 
 # Containerization Parameters (in future podman will useable)
-export CONTAINER_BIN=docker
+export CONTAINER_BIN=podman
 export CONTAINER_COMPOSE=${CONTAINER_BIN} compose
 export DEFAULT_IMAGE_REGISTRY=docker.io/library/
 export DOCKERFILE=./Dockerfile
@@ -16,15 +16,15 @@ GIT_URL := $(shell git remote get-url origin)
 GIT_REPO := $(shell basename $(GIT_URL) .git)
 GIT_BRANCH:=$(shell git branch --show-current)
 
+# vnc configurations
+EXTERNAL_VNC_PORT=15901
+INTERNAL_PORT=80
+
 # Docker/podman config
 IMAGE_NAME=${GIT_REPO}
 IMAGE_TAG=${GIT_BRANCH}
 IMAGE_NAME_TAG=${IMAGE_NAME}:${IMAGE_TAG}
-CONTAINER_NAME=${GIT_REPO}
-
-# vnc configurations
-EXTERNAL_VNC_PORT=15801
-INTERNAL_PORT=80
+CONTAINER_NAME=${GIT_REPO}-${EXTERNAL_VNC_PORT}
 
 build: ## Build 42 docker image
 	${CONTAINER_BIN} build \
@@ -34,22 +34,23 @@ build: ## Build 42 docker image
 up: | down build ## bring up X app in x/vnc system
 	@${CONTAINER_BIN} run -d --rm \
 		--name ${CONTAINER_NAME} \
-    --volume ${PWD}/entrypoint.sh:/entrypoint.sh \
-    --volume ${PWD}/startapp.sh:/startapp.sh \
-    -p ${EXTERNAL_VNC_PORT}:${INTERNAL_PORT} ${IMAGE_NAME_TAG}; \
-    echo; $(MAKE) info; echo
+		--hostname ${CONTAINER_NAME} \
+		--volume ${PWD}/entrypoint.sh:/entrypoint.sh \
+		--volume ${PWD}/startapp.sh:/startapp.sh \
+		-p ${EXTERNAL_VNC_PORT}:${INTERNAL_PORT} ${IMAGE_NAME_TAG} && \
+		$(MAKE) --silent info; echo
 
 down: ## Bring down 42
 	${CONTAINER_BIN} stop ${CONTAINER_NAME} || true
 	${CONTAINER_BIN} rm ${CONTAINER_NAME} || true
 
 clean: ## clean up: stop, and remove container and delete 42's image
-  ${CONTAINER_BIN} stop ${CONTAINER_NAME} || true && \
-  ${CONTAINER_BIN} rm ${CONTAINER_NAME} || true && \
-  ${CONTAINER_BIN} rmi ${IMAGE_NAME_TAG} || true
+	${CONTAINER_BIN} stop ${CONTAINER_NAME} || true && \
+	${CONTAINER_BIN} rm ${CONTAINER_NAME} || true && \
+	${CONTAINER_BIN} rmi ${IMAGE_NAME_TAG} || true
 
 delete: ## delete 42's image
-  ${CONTAINER_BIN} rmi ${IMAGE_NAME_TAG}
+	${CONTAINER_BIN} rmi ${IMAGE_NAME_TAG} -f
 
 info: ## show info
 	@echo "open browser to http://localhost:${EXTERNAL_VNC_PORT}/vnc.html and click on 'Connect'";
