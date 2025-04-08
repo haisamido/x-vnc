@@ -46,12 +46,6 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# VNC Config
-RUN mkdir -p ~/.vnc/
-RUN echo ${VNC_PASSWORD} | vncpasswd -f > ~/.vnc/passwd
-RUN chmod 0600 ~/.vnc/passwd
-RUN openssl req -x509 -nodes -newkey rsa:2048 -keyout ~/novnc.pem -out ~/novnc.pem -days 3650 -subj "/C=US/ST=NY/L=NY/O=NY/OU=NY/CN=NY emailAddress=email@example.com"
-
 # Install and configure Display Manager(s) - https://fluxbox.org/
 RUN apt-get update && \
     apt-get install -y \
@@ -70,6 +64,12 @@ RUN apt-get update && \
 
 # Install https://taskfile.dev/ (Taskfile.yaml)
 RUN sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d v3.36.0
+
+# VNC Config
+RUN mkdir -p ~/.vnc/
+RUN echo ${VNC_PASSWORD} | vncpasswd -f > ~/.vnc/passwd
+RUN chmod 0600 ~/.vnc/passwd
+RUN openssl req -x509 -nodes -newkey rsa:2048 -keyout ~/novnc.pem -out ~/novnc.pem -days 3650 -subj "/C=US/ST=NY/L=NY/O=NY/OU=NY/CN=NY emailAddress=email@example.com"
 
 COPY entrypoint.sh /entrypoint.sh
 
