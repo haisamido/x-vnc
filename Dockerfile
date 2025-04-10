@@ -64,7 +64,7 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 # Install https://taskfile.dev/ (Taskfile.yaml)
-RUN sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d v3.36.0
+RUN sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d
 
 # Install some useful .bashrc-isms
 COPY .bashrc.local /root/.bashrc.local
