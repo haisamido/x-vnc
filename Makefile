@@ -21,10 +21,36 @@ EXTERNAL_VNC_PORT=15901
 INTERNAL_PORT=80
 
 # Docker/podman config
+IMAGE_SUFFIX=
+
+REGISTRY_HOST=localhost
+IMAGE_USERNAME=library
 IMAGE_NAME=${GIT_REPO}
 IMAGE_TAG=${GIT_BRANCH}
 IMAGE_NAME_TAG=${IMAGE_NAME}:${IMAGE_TAG}
+
 CONTAINER_NAME=${GIT_REPO}-${EXTERNAL_VNC_PORT}
+
+# Publicly warehoused pre-built (PB) image
+IMAGE_URI_PREBUILT=ghcr.io/haisamido/x-vnc:latest
+EXTERNAL_VNC_PORT_PB=15902
+CONTAINER_NAME_PB=$(GIT_REPO)${IMAGE_SUFFIX}-${EXTERNAL_VNC_PORT_PB}
+
+pull-prebuilt: ## Pull pre-built x-vnc image
+	${CONTAINER_BIN} pull ${IMAGE_URI_PREBUILT}
+
+up-prebuilt: pull-prebuilt ## Bring up x-vnc from a pre-built image from a remote registry
+	$(MAKE) down CONTAINER_NAME=${CONTAINER_NAME_PB}
+	${CONTAINER_BIN} run -d --rm \
+		--name ${CONTAINER_NAME_PB} \
+		--hostname ${CONTAINER_NAME_PB} \
+		--volume ${HOME}/.ssh:/root/.ssh \
+		--volume ${HOME}/.gitconfig:/root/.gitconfig \
+		--volume ${PWD}/entrypoint.sh:/entrypoint.sh \
+		--volume ${PWD}/startapp.sh:/startapp.sh \
+		-p ${EXTERNAL_VNC_PORT_PB}:${INTERNAL_PORT} \
+		${IMAGE_URI_PREBUILT} && \
+		$(MAKE) info EXTERNAL_VNC_PORT=${EXTERNAL_VNC_PORT_PB}
 
 build: ## Build 42 docker image
 	${CONTAINER_BIN} build \
@@ -35,12 +61,14 @@ up: | down build ## bring up X app in x/vnc system
 	@${CONTAINER_BIN} run -d --rm \
 		--name ${CONTAINER_NAME} \
 		--hostname ${CONTAINER_NAME} \
+		--volume ${HOME}/.ssh:/root/.ssh \
+		--volume ${HOME}/.gitconfig:/root/.gitconfig \
 		--volume ${PWD}/entrypoint.sh:/entrypoint.sh \
 		--volume ${PWD}/startapp.sh:/startapp.sh \
 		-p ${EXTERNAL_VNC_PORT}:${INTERNAL_PORT} ${IMAGE_NAME_TAG} && \
-		$(MAKE) --silent info; echo
+		$(MAKE) info
 
-down: ## Bring down 42
+down: ## Bring down x-vnc
 	${CONTAINER_BIN} stop ${CONTAINER_NAME} || true
 	${CONTAINER_BIN} rm ${CONTAINER_NAME} || true
 
@@ -49,11 +77,13 @@ clean: ## clean up: stop, and remove container and delete 42's image
 	${CONTAINER_BIN} rm ${CONTAINER_NAME} || true && \
 	${CONTAINER_BIN} rmi ${IMAGE_NAME_TAG} || true
 
-delete: ## delete 42's image
+delete: ## locally delete x-vnc's image
 	${CONTAINER_BIN} rmi ${IMAGE_NAME_TAG} -f
 
 info: ## show info
-	@echo "open browser to http://localhost:${EXTERNAL_VNC_PORT}/vnc.html and click on 'Connect'";
+	@echo
+	@echo "open browser to http://localhost:${EXTERNAL_VNC_PORT}/vnc.html and click on 'Connect'"
+	@echo
 
 #---
 RESET  = \033[0m

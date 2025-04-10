@@ -2,6 +2,7 @@ ARG REGISTRY_HOST=docker.io
 ARG IMAGE_USERNAME=library
 ARG IMAGE_NAME=ubuntu
 ARG IMAGE_TAG=25.04
+
 ARG IMAGE_URI=${REGISTRY_HOST}/${IMAGE_USERNAME}/${IMAGE_NAME}:${IMAGE_TAG}
 
 ARG VNC_PASSWORD=0123456789
@@ -64,6 +65,10 @@ RUN apt-get update && \
 
 # Install https://taskfile.dev/ (Taskfile.yaml)
 RUN sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d v3.36.0
+
+# Install some useful .bashrc-isms
+COPY .bashrc.local /root/.bashrc.local
+RUN cat /root/.bashrc.local >> /root/.bashrc
 
 # VNC Config
 RUN mkdir -p ~/.vnc/
