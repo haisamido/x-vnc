@@ -59,7 +59,7 @@ RUN ln -sf /usr/share/xsessions/fluxbox.desktop /usr/share/xsessions/gnome.deskt
 
 # Install tools for git cloning and development, etc.
 RUN apt-get update && \
-    apt install -y curl git build-essential vim jq xq tree tmux htop bash-completion dos2unix && \
+    apt install -y curl git build-essential vim jq xq tree tmux htop bash-completion dos2unix netcat-traditional iputils-ping && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
