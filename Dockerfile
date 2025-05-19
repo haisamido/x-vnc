@@ -26,6 +26,7 @@ RUN apt-get update && \
       libglu1-mesa \
       xauth \
       x11-utils \
+      xterm \
       xorg \
       tightvncserver && \
     apt-get clean && \
