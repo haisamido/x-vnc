@@ -2,12 +2,13 @@ name: build/push amd64 & arm64 images CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "dev", 'releases/**', 'issue_**' ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "main", "dev"  ]
 
 env:
   REGISTRY: ghcr.io
+  BRANCH_NAME: ${{ github.head_ref || github.ref_name }} 
 
 jobs:
 
@@ -40,5 +41,5 @@ jobs:
           context: .
           push: true
           platforms: linux/amd64,linux/arm64
-          tags: ${{ env.REGISTRY }}/${{ github.repository }}:${{ github.ref_name }}, ${{ env.REGISTRY }}/${{ github.repository }}:latest
+          tags: ${{ env.REGISTRY }}/${{ github.repository }}:${{ env.BRANCH_NAME }},${{ env.REGISTRY }}/${{ github.repository }}:latest
           labels: ${{ steps.meta.outputs.labels }}
